@@ -1,80 +1,418 @@
-<!-- =========================================================
-     AJOUTS A FAIRE DANS TON HTML ACTUEL
-========================================================= -->
+<!DOCTYPE html>
+<html lang="fr">
 
-<!-- =========================================================
-     1. AJOUTE CE BOUTON
-     (dans la div class="buttons" du mode)
-========================================================= -->
+<head>
 
-<button id="btnBoth">
-    Comparaison directe
-</button>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- =========================================================
-     2. REMPLACE COMPLETEMENT renderChart(data)
-========================================================= -->
+<title>Comparatif pénalités FIS</title>
 
-function renderChart(data){
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+    margin:0;
+    padding:30px;
+    background:#f4f6fb;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.container{
+    max-width:1500px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+    font-size:42px;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#666;
+    margin-bottom:35px;
+}
+
+.buttons{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+}
+
+button{
+    padding:12px 22px;
+    border:none;
+    border-radius:12px;
+    background:white;
+    cursor:pointer;
+    font-size:16px;
+    transition:0.2s;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+button:hover{
+    transform:translateY(-2px);
+}
+
+button.active{
+    background:#1f7a45;
+    color:white;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:18px;
+    text-align:center;
+    box-shadow:0 2px 10px rgba(0,0,0,0.05);
+}
+
+.card h2{
+    margin:0;
+    font-size:42px;
+}
+
+.card p{
+    margin-top:10px;
+    color:#666;
+}
+
+.chart-box{
+    background:white;
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.05);
+}
+
+.footer{
+    margin-top:20px;
+    text-align:center;
+    color:#777;
+    font-size:14px;
+}
+
+@media(max-width:900px){
+
+    .cards{
+        grid-template-columns:1fr;
+    }
+
+    h1{
+        font-size:30px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Comparatif pénalités FIS</h1>
+
+    <div class="subtitle">
+        Comparaison des courses à pénalité minimum 23.00
+    </div>
+
+    <!-- ========================= -->
+    <!-- BOUTONS -->
+    <!-- ========================= -->
+
+    <div class="buttons">
+
+        <button id="btnWithout" class="active">
+            Sans additif
+        </button>
+
+        <button id="btnWith">
+            Avec additif +8
+        </button>
+
+        <button id="btnBoth">
+            Comparaison directe
+        </button>
+
+    </div>
+
+    <div class="buttons">
+
+        <button id="btnTotal" class="active">
+            Total
+        </button>
+
+        <button id="btnMen">
+            Hommes
+        </button>
+
+        <button id="btnWomen">
+            Dames
+        </button>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- CARDS -->
+    <!-- ========================= -->
+
+    <div class="cards">
+
+        <div class="card">
+            <h2 id="nbNations">0</h2>
+            <p>Nations</p>
+        </div>
+
+        <div class="card">
+            <h2 id="nbCourses">0</h2>
+            <p>Courses</p>
+        </div>
+
+        <div class="card">
+            <h2 id="fraRank">-</h2>
+            <p>Classement France</p>
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- CHART -->
+    <!-- ========================= -->
+
+    <div class="chart-box">
+
+        <canvas id="chart"></canvas>
+
+    </div>
+
+    <div class="footer">
+        France mise en évidence — même échelle pour comparer réellement les graphiques
+    </div>
+
+</div>
+
+<script>
+
+/* =========================================================
+   DATA SANS ADDITIF
+========================================================= */
+
+const dataWithout = [
+
+{"Nationcode":"ITA","Nb23_M":79,"Nb23_W":57,"Nb23_Total":136},
+{"Nationcode":"AUT","Nb23_M":49,"Nb23_W":39,"Nb23_Total":88},
+{"Nationcode":"SWE","Nb23_M":48,"Nb23_W":26,"Nb23_Total":74},
+{"Nationcode":"USA","Nb23_M":40,"Nb23_W":30,"Nb23_Total":70},
+{"Nationcode":"NOR","Nb23_M":39,"Nb23_W":23,"Nb23_Total":62},
+{"Nationcode":"SUI","Nb23_M":29,"Nb23_W":21,"Nb23_Total":50},
+{"Nationcode":"FRA","Nb23_M":26,"Nb23_W":14,"Nb23_Total":40},
+{"Nationcode":"SLO","Nb23_M":13,"Nb23_W":6,"Nb23_Total":19},
+{"Nationcode":"CAN","Nb23_M":14,"Nb23_W":3,"Nb23_Total":17},
+{"Nationcode":"GER","Nb23_M":8,"Nb23_W":8,"Nb23_Total":16}
+
+];
+
+/* =========================================================
+   DATA AVEC ADDITIF
+========================================================= */
+
+const dataWith = [
+
+{"Nationcode":"USA","Nb23_M":27,"Nb23_W":23,"Nb23_Total":50},
+{"Nationcode":"ITA","Nb23_M":20,"Nb23_W":25,"Nb23_Total":45},
+{"Nationcode":"AUT","Nb23_M":10,"Nb23_W":12,"Nb23_Total":22},
+{"Nationcode":"NOR","Nb23_M":11,"Nb23_W":9,"Nb23_Total":20},
+{"Nationcode":"FRA","Nb23_M":12,"Nb23_W":7,"Nb23_Total":19},
+{"Nationcode":"SUI","Nb23_M":9,"Nb23_W":6,"Nb23_Total":15},
+{"Nationcode":"SWE","Nb23_M":6,"Nb23_W":6,"Nb23_Total":12}
+
+];
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let currentMode = "without";
+let currentGender = "total";
+
+let chart;
+
+const GLOBAL_MAX = 140;
+
+/* =========================================================
+   UPDATE
+========================================================= */
+
+function update(){
+
+    let data =
+        currentMode === "with"
+        ? dataWith
+        : dataWithout;
+
+    renderStats(data);
+
+    renderChart();
+
+}
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function renderStats(data){
+
+    document.getElementById("nbNations")
+    .innerText = data.length;
+
+    let total = 0;
+
+    data.forEach(d=>{
+
+        if(currentGender==="men"){
+            total += d.Nb23_M;
+        }
+        else if(currentGender==="women"){
+            total += d.Nb23_W;
+        }
+        else{
+            total += d.Nb23_Total;
+        }
+
+    });
+
+    document.getElementById("nbCourses")
+    .innerText = total;
+
+    const fraIndex =
+        data.findIndex(
+            d=>d.Nationcode==="FRA"
+        );
+
+    document.getElementById("fraRank")
+    .innerText =
+        fraIndex >=0
+        ? "#" + (fraIndex+1)
+        : "-";
+
+}
+
+/* =========================================================
+   CHART
+========================================================= */
+
+function renderChart(){
 
     const labels =
-        data.map(d=>d.Nationcode);
+        dataWithout.map(d=>d.Nationcode);
 
-    let values = [];
+    let valuesWithout = [];
+    let valuesWith = [];
+
+    if(currentGender==="men"){
+
+        valuesWithout =
+            dataWithout.map(d=>d.Nb23_M);
+
+        valuesWith =
+            labels.map(nation=>{
+
+                const found =
+                    dataWith.find(
+                        x=>x.Nationcode===nation
+                    );
+
+                return found
+                    ? found.Nb23_M
+                    : 0;
+
+            });
+
+    }
+
+    else if(currentGender==="women"){
+
+        valuesWithout =
+            dataWithout.map(d=>d.Nb23_W);
+
+        valuesWith =
+            labels.map(nation=>{
+
+                const found =
+                    dataWith.find(
+                        x=>x.Nationcode===nation
+                    );
+
+                return found
+                    ? found.Nb23_W
+                    : 0;
+
+            });
+
+    }
+
+    else{
+
+        valuesWithout =
+            dataWithout.map(d=>d.Nb23_Total);
+
+        valuesWith =
+            labels.map(nation=>{
+
+                const found =
+                    dataWith.find(
+                        x=>x.Nationcode===nation
+                    );
+
+                return found
+                    ? found.Nb23_Total
+                    : 0;
+
+            });
+
+    }
+
+    if(chart){
+        chart.destroy();
+    }
 
     let datasets = [];
 
     /* =====================================================
-       MODE NORMAL
+       MODE SANS ADDITIF
     ===================================================== */
 
-    if(currentMode !== "both"){
-
-        if(currentGender==="men"){
-
-            values =
-                data.map(d=>d.Nb23_M);
-
-        }
-        else if(currentGender==="women"){
-
-            values =
-                data.map(d=>d.Nb23_W);
-
-        }
-        else{
-
-            values =
-                data.map(d=>d.Nb23_Total);
-
-        }
+    if(currentMode==="without"){
 
         datasets = [
 
             {
-                label:"Courses",
+                label:"Sans additif",
 
-                data:values,
+                data:valuesWithout,
 
                 backgroundColor:
                     labels.map(nation=>
 
                         nation==="FRA"
                         ? "#0055ff"
-                        : "rgba(180,180,180,0.45)"
+                        : "rgba(180,180,180,0.35)"
 
-                    ),
+                    )
 
-                borderColor:
-                    labels.map(nation=>
-
-                        nation==="FRA"
-                        ? "#003399"
-                        : "rgba(120,120,120,0.25)"
-
-                    ),
-
-                borderWidth:1
             }
 
         ];
@@ -82,76 +420,38 @@ function renderChart(data){
     }
 
     /* =====================================================
-       MODE COMPARAISON DIRECTE
+       MODE AVEC ADDITIF
+    ===================================================== */
+
+    else if(currentMode==="with"){
+
+        datasets = [
+
+            {
+                label:"Avec additif +8",
+
+                data:valuesWith,
+
+                backgroundColor:
+                    labels.map(nation=>
+
+                        nation==="FRA"
+                        ? "#ff4444"
+                        : "rgba(160,160,160,0.30)"
+
+                    )
+
+            }
+
+        ];
+
+    }
+
+    /* =====================================================
+       MODE COMPARAISON
     ===================================================== */
 
     else{
-
-        let valuesWithout = [];
-        let valuesWith = [];
-
-        if(currentGender==="men"){
-
-            valuesWithout =
-                dataWithout.map(d=>d.Nb23_M);
-
-            valuesWith =
-                dataWith.map(d=>{
-
-                    const found =
-                        dataWith.find(
-                            x=>x.Nationcode===d.Nationcode
-                        );
-
-                    return found
-                        ? found.Nb23_M
-                        : 0;
-
-                });
-
-        }
-
-        else if(currentGender==="women"){
-
-            valuesWithout =
-                dataWithout.map(d=>d.Nb23_W);
-
-            valuesWith =
-                dataWith.map(d=>{
-
-                    const found =
-                        dataWith.find(
-                            x=>x.Nationcode===d.Nationcode
-                        );
-
-                    return found
-                        ? found.Nb23_W
-                        : 0;
-
-                });
-
-        }
-
-        else{
-
-            valuesWithout =
-                dataWithout.map(d=>d.Nb23_Total);
-
-            valuesWith =
-                dataWith.map(d=>{
-
-                    const found =
-                        dataWith.find(
-                            x=>x.Nationcode===d.Nationcode
-                        );
-
-                    return found
-                        ? found.Nb23_Total
-                        : 0;
-
-                });
-
-        }
 
         datasets = [
 
@@ -165,7 +465,7 @@ function renderChart(data){
 
                         nation==="FRA"
                         ? "rgba(0,85,255,0.85)"
-                        : "rgba(180,180,180,0.35)"
+                        : "rgba(180,180,180,0.30)"
 
                     )
 
@@ -181,7 +481,7 @@ function renderChart(data){
 
                         nation==="FRA"
                         ? "rgba(255,80,80,0.95)"
-                        : "rgba(120,120,120,0.25)"
+                        : "rgba(120,120,120,0.20)"
 
                     )
 
@@ -189,10 +489,6 @@ function renderChart(data){
 
         ];
 
-    }
-
-    if(chart){
-        chart.destroy();
     }
 
     chart = new Chart(
@@ -204,37 +500,31 @@ function renderChart(data){
             type:"bar",
 
             data:{
-
                 labels:labels,
-
                 datasets:datasets
-
             },
 
             options:{
 
                 responsive:true,
 
+                indexAxis:'y',
+
                 animation:{
                     duration:1200
                 },
 
                 plugins:{
-
                     legend:{
                         display:true
                     }
-
                 },
 
                 scales:{
 
-                    y:{
-
+                    x:{
                         beginAtZero:true,
-
                         max:GLOBAL_MAX
-
                     }
 
                 }
@@ -247,15 +537,11 @@ function renderChart(data){
 
 }
 
-<!-- =========================================================
-     3. AJOUTE CE CODE AVEC LES AUTRES BOUTONS
-========================================================= -->
+/* =========================================================
+   HELPERS
+========================================================= */
 
-document
-.getElementById("btnBoth")
-.addEventListener("click",()=>{
-
-    currentMode = "both";
+function activateModeButton(id){
 
     document
     .getElementById("btnWithout")
@@ -267,17 +553,37 @@ document
 
     document
     .getElementById("btnBoth")
+    .classList.remove("active");
+
+    document
+    .getElementById(id)
     .classList.add("active");
 
-    update();
+}
 
-});
+function activateGenderButton(id){
 
-<!-- =========================================================
-     4. MODIFIE LES 2 AUTRES BOUTONS
-========================================================= -->
+    document
+    .getElementById("btnTotal")
+    .classList.remove("active");
 
-/* ===== bouton sans additif ===== */
+    document
+    .getElementById("btnMen")
+    .classList.remove("active");
+
+    document
+    .getElementById("btnWomen")
+    .classList.remove("active");
+
+    document
+    .getElementById(id)
+    .classList.add("active");
+
+}
+
+/* =========================================================
+   BOUTONS MODE
+========================================================= */
 
 document
 .getElementById("btnWithout")
@@ -285,23 +591,11 @@ document
 
     currentMode = "without";
 
-    document
-    .getElementById("btnWithout")
-    .classList.add("active");
-
-    document
-    .getElementById("btnWith")
-    .classList.remove("active");
-
-    document
-    .getElementById("btnBoth")
-    .classList.remove("active");
+    activateModeButton("btnWithout");
 
     update();
 
 });
-
-/* ===== bouton avec additif ===== */
 
 document
 .getElementById("btnWith")
@@ -309,18 +603,71 @@ document
 
     currentMode = "with";
 
-    document
-    .getElementById("btnWith")
-    .classList.add("active");
-
-    document
-    .getElementById("btnWithout")
-    .classList.remove("active");
-
-    document
-    .getElementById("btnBoth")
-    .classList.remove("active");
+    activateModeButton("btnWith");
 
     update();
 
 });
+
+document
+.getElementById("btnBoth")
+.addEventListener("click",()=>{
+
+    currentMode = "both";
+
+    activateModeButton("btnBoth");
+
+    update();
+
+});
+
+/* =========================================================
+   BOUTONS GENRE
+========================================================= */
+
+document
+.getElementById("btnTotal")
+.addEventListener("click",()=>{
+
+    currentGender = "total";
+
+    activateGenderButton("btnTotal");
+
+    update();
+
+});
+
+document
+.getElementById("btnMen")
+.addEventListener("click",()=>{
+
+    currentGender = "men";
+
+    activateGenderButton("btnMen");
+
+    update();
+
+});
+
+document
+.getElementById("btnWomen")
+.addEventListener("click",()=>{
+
+    currentGender = "women";
+
+    activateGenderButton("btnWomen");
+
+    update();
+
+});
+
+/* =========================================================
+   START
+========================================================= */
+
+update();
+
+</script>
+
+</body>
+</html>

@@ -94,6 +94,14 @@ button.active{
     padding:25px;
     border-radius:20px;
     box-shadow:0 2px 10px rgba(0,0,0,0.05);
+
+    /* ===== DESKTOP ===== */
+    height:850px;
+}
+
+#chart{
+    width:100% !important;
+    height:100% !important;
 }
 
 .footer{
@@ -159,12 +167,13 @@ button.active{
     }
 
     .chart-box{
-        padding:6px;
-        overflow-x:auto;
-    }
 
-    #chart{
-        min-height:650px !important;
+        padding:6px;
+
+        /* ===== MOBILE ===== */
+        height:720px;
+
+        overflow-x:auto;
     }
 
     .footer{
@@ -507,10 +516,6 @@ function renderChart(){
 
     let datasets = [];
 
-    /* =========================================
-       MODE SANS ADDITIF
-    ========================================= */
-
     if(currentMode==="without"){
 
         datasets = [
@@ -531,10 +536,6 @@ function renderChart(){
         ];
 
     }
-
-    /* =========================================
-       MODE AVEC ADDITIF
-    ========================================= */
 
     else if(currentMode==="with"){
 
@@ -558,10 +559,6 @@ function renderChart(){
         ];
 
     }
-
-    /* =========================================
-       MODE COMPARAISON
-    ========================================= */
 
     else{
 

@@ -199,7 +199,7 @@ button.active{
     </div>
 
     <div class="footer">
-        Même échelle conservée pour permettre une vraie comparaison visuelle
+        Couleurs identiques par nation — hachures sur le mode "avec additif"
     </div>
 
 </div>
@@ -256,73 +256,56 @@ const GLOBAL_MAX = 140;
    COULEURS PAR NATION
 ========================================================= */
 
-function getNationColor(nation, mode){
+function getNationBaseColor(nation){
 
     const colors = {
 
-        FRA:{
-            light:"rgba(120,170,255,0.55)",
-            strong:"rgba(0,85,255,0.95)"
-        },
+        FRA:"#0055ff",
+        ITA:"#3aaa35",
+        SUI:"#d62828",
+        AUT:"#6c63a8",
+        NOR:"#e67e22",
+        SWE:"#d4b000",
+        USA:"#3f72ff",
+        GER:"#666666",
+        CAN:"#cc4444",
+        SLO:"#00aaaa",
 
-        ITA:{
-            light:"rgba(150,220,150,0.55)",
-            strong:"rgba(60,170,60,0.95)"
-        },
-
-        SUI:{
-            light:"rgba(255,170,170,0.55)",
-            strong:"rgba(200,40,40,0.95)"
-        },
-
-        AUT:{
-            light:"rgba(190,190,220,0.55)",
-            strong:"rgba(110,110,170,0.95)"
-        },
-
-        NOR:{
-            light:"rgba(255,210,160,0.55)",
-            strong:"rgba(230,140,50,0.95)"
-        },
-
-        SWE:{
-            light:"rgba(255,240,160,0.55)",
-            strong:"rgba(220,190,20,0.95)"
-        },
-
-        USA:{
-            light:"rgba(170,200,255,0.55)",
-            strong:"rgba(60,110,220,0.95)"
-        },
-
-        GER:{
-            light:"rgba(200,200,200,0.55)",
-            strong:"rgba(100,100,100,0.95)"
-        },
-
-        CAN:{
-            light:"rgba(255,180,180,0.55)",
-            strong:"rgba(220,70,70,0.95)"
-        },
-
-        SLO:{
-            light:"rgba(180,255,255,0.55)",
-            strong:"rgba(0,170,170,0.95)"
-        },
-
-        default:{
-            light:"rgba(210,210,210,0.40)",
-            strong:"rgba(150,150,150,0.85)"
-        }
+        default:"#999999"
 
     };
 
-    const c =
-        colors[nation] || colors.default;
+    return colors[nation] || colors.default;
 
-    return mode === "with"
-        ? c.strong
-        : c.light;
+}
+
+/* =========================================================
+   CREATION HACHURES
+========================================================= */
+
+function createPattern(color){
+
+    const canvas =
+        document.createElement('canvas');
+
+    canvas.width = 12;
+    canvas.height = 12;
+
+    const ctx =
+        canvas.getContext('2d');
+
+    ctx.fillStyle = color;
+    ctx.fillRect(0,0,12,12);
+
+    ctx.strokeStyle = "rgba(255,255,255,0.7)";
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    ctx.moveTo(0,12);
+    ctx.lineTo(12,0);
+    ctx.stroke();
+
+    return ctx.createPattern(canvas,'repeat');
 
 }
 
@@ -481,10 +464,7 @@ function renderChart(){
                 backgroundColor:
                     labels.map(
                         nation =>
-                            getNationColor(
-                                nation,
-                                "without"
-                            )
+                            getNationBaseColor(nation)
                     )
 
             }
@@ -509,9 +489,8 @@ function renderChart(){
                 backgroundColor:
                     labels.map(
                         nation =>
-                            getNationColor(
-                                nation,
-                                "with"
+                            createPattern(
+                                getNationBaseColor(nation)
                             )
                     )
 
@@ -537,10 +516,7 @@ function renderChart(){
                 backgroundColor:
                     labels.map(
                         nation =>
-                            getNationColor(
-                                nation,
-                                "without"
-                            )
+                            getNationBaseColor(nation)
                     )
 
             },
@@ -553,9 +529,8 @@ function renderChart(){
                 backgroundColor:
                     labels.map(
                         nation =>
-                            getNationColor(
-                                nation,
-                                "with"
+                            createPattern(
+                                getNationBaseColor(nation)
                             )
                     )
 

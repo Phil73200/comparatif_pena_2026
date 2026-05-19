@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Comparatif pénalités FIS</title>
 
@@ -13,7 +15,7 @@
 body{
     margin:0;
     padding:30px;
-    background:#f5f6fa;
+    background:#f4f6fb;
     font-family:Arial, Helvetica, sans-serif;
 }
 
@@ -24,17 +26,17 @@ body{
 
 h1{
     text-align:center;
-    margin-bottom:10px;
     font-size:42px;
+    margin-bottom:10px;
 }
 
 .subtitle{
     text-align:center;
     color:#666;
-    margin-bottom:30px;
+    margin-bottom:35px;
 }
 
-.topbar{
+.buttons{
     display:flex;
     justify-content:center;
     gap:15px;
@@ -43,14 +45,14 @@ h1{
 }
 
 button{
-    padding:12px 20px;
+    padding:12px 22px;
     border:none;
     border-radius:12px;
+    background:white;
     cursor:pointer;
     font-size:16px;
-    background:white;
-    box-shadow:0 2px 8px rgba(0,0,0,0.08);
     transition:0.2s;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
 }
 
 button:hover{
@@ -58,7 +60,7 @@ button:hover{
 }
 
 button.active{
-    background:#1e8449;
+    background:#1f7a45;
     color:white;
 }
 
@@ -83,11 +85,11 @@ button.active{
 }
 
 .card p{
-    margin-top:8px;
+    margin-top:10px;
     color:#666;
 }
 
-.chart-container{
+.chart-box{
     background:white;
     padding:25px;
     border-radius:20px;
@@ -96,9 +98,9 @@ button.active{
 
 .footer{
     margin-top:20px;
+    text-align:center;
     color:#777;
     font-size:14px;
-    text-align:center;
 }
 
 @media(max-width:900px){
@@ -114,6 +116,7 @@ button.active{
 }
 
 </style>
+
 </head>
 
 <body>
@@ -123,10 +126,10 @@ button.active{
     <h1>Comparatif pénalités FIS</h1>
 
     <div class="subtitle">
-        Courses avec pénalité minimum 23.00
+        Comparaison des courses à pénalité minimum 23.00
     </div>
 
-    <div class="topbar">
+    <div class="buttons">
 
         <button id="btnWithout" class="active">
             Sans additif
@@ -152,64 +155,105 @@ button.active{
 
         <div class="card">
             <h2 id="fraRank">-</h2>
-            <p>France</p>
+            <p>Classement France</p>
         </div>
 
     </div>
 
-    <div class="chart-container">
+    <div class="chart-box">
 
         <canvas id="chart"></canvas>
 
     </div>
 
     <div class="footer">
-        Comparaison dynamique des pénalités FIS — GitHub Pages Ready
+        Comparatif dynamique FIS — HTML autonome GitHub Ready
     </div>
 
 </div>
 
 <script>
 
-/* =====================================================
-   FICHIERS JSON
-===================================================== */
+/* =========================================================
+   DATA SANS ADDITIF
+========================================================= */
 
-const FILE_WITHOUT = "./data/sans_adder.json";
-const FILE_WITH = "./data/avec_adder.json";
+const dataWithout = [
 
-/* =====================================================
+{
+"Nationcode":"ITA","Nb23_M":79,"Nb23_W":57,"Nb23_Total":136
+},
+{
+"Nationcode":"AUT","Nb23_M":49,"Nb23_W":39,"Nb23_Total":88
+},
+{
+"Nationcode":"SWE","Nb23_M":48,"Nb23_W":26,"Nb23_Total":74
+},
+{
+"Nationcode":"USA","Nb23_M":40,"Nb23_W":30,"Nb23_Total":70
+},
+{
+"Nationcode":"NOR","Nb23_M":39,"Nb23_W":23,"Nb23_Total":62
+},
+{
+"Nationcode":"SUI","Nb23_M":29,"Nb23_W":21,"Nb23_Total":50
+},
+{
+"Nationcode":"FRA","Nb23_M":26,"Nb23_W":14,"Nb23_Total":40
+},
+{
+"Nationcode":"SLO","Nb23_M":13,"Nb23_W":6,"Nb23_Total":19
+},
+{
+"Nationcode":"CAN","Nb23_M":14,"Nb23_W":3,"Nb23_Total":17
+},
+{
+"Nationcode":"GER","Nb23_M":8,"Nb23_W":8,"Nb23_Total":16
+}
+
+];
+
+/* =========================================================
+   DATA AVEC ADDITIF
+========================================================= */
+
+const dataWith = [
+
+{
+"Nationcode":"USA","Nb23_M":27,"Nb23_W":23,"Nb23_Total":50
+},
+{
+"Nationcode":"ITA","Nb23_M":20,"Nb23_W":25,"Nb23_Total":45
+},
+{
+"Nationcode":"AUT","Nb23_M":10,"Nb23_W":12,"Nb23_Total":22
+},
+{
+"Nationcode":"NOR","Nb23_M":11,"Nb23_W":9,"Nb23_Total":20
+},
+{
+"Nationcode":"FRA","Nb23_M":12,"Nb23_W":7,"Nb23_Total":19
+},
+{
+"Nationcode":"SUI","Nb23_M":9,"Nb23_W":6,"Nb23_Total":15
+},
+{
+"Nationcode":"SWE","Nb23_M":6,"Nb23_W":6,"Nb23_Total":12
+}
+
+];
+
+/* =========================================================
    VARIABLES
-===================================================== */
-
-let dataWithout = [];
-let dataWith = [];
+========================================================= */
 
 let currentMode = "without";
 
 let chart;
 
-/* =====================================================
-   LOAD JSON
-===================================================== */
-
-async function loadData(){
-
-    dataWithout =
-        await fetch(FILE_WITHOUT)
-        .then(r => r.json());
-
-    dataWith =
-        await fetch(FILE_WITH)
-        .then(r => r.json());
-
-    update();
-
-}
-
-/* =====================================================
+/* =========================================================
    UPDATE
-===================================================== */
+========================================================= */
 
 function update(){
 
@@ -224,9 +268,9 @@ function update(){
 
 }
 
-/* =====================================================
+/* =========================================================
    STATS
-===================================================== */
+========================================================= */
 
 function renderStats(data){
 
@@ -235,7 +279,7 @@ function renderStats(data){
 
     const total =
         data.reduce(
-            (sum,d) => sum + d.Nb23_Total,
+            (sum,d)=>sum+d.Nb23_Total,
             0
         );
 
@@ -243,38 +287,43 @@ function renderStats(data){
     .innerText = total;
 
     const fraIndex =
-        data.findIndex(d => d.Nationcode === "FRA");
+        data.findIndex(
+            d=>d.Nationcode==="FRA"
+        );
 
     document.getElementById("fraRank")
     .innerText =
-        fraIndex >= 0
-        ? "#" + (fraIndex + 1)
+        fraIndex >=0
+        ? "#" + (fraIndex+1)
         : "-";
 
 }
 
-/* =====================================================
+/* =========================================================
    CHART
-===================================================== */
+========================================================= */
 
 function renderChart(data){
 
     const labels =
-        data.map(d => d.Nationcode);
+        data.map(d=>d.Nationcode);
 
     const men =
-        data.map(d => d.Nb23_M);
+        data.map(d=>d.Nb23_M);
 
     const women =
-        data.map(d => d.Nb23_W);
+        data.map(d=>d.Nb23_W);
 
     if(chart){
         chart.destroy();
     }
 
     chart = new Chart(
+
         document.getElementById("chart"),
+
         {
+
             type:"bar",
 
             data:{
@@ -307,6 +356,12 @@ function renderChart(data){
                     duration:1000
                 },
 
+                plugins:{
+                    legend:{
+                        position:"top"
+                    }
+                },
+
                 scales:{
 
                     x:{
@@ -318,41 +373,19 @@ function renderChart(data){
                         beginAtZero:true
                     }
 
-                },
-
-                plugins:{
-
-                    tooltip:{
-                        callbacks:{
-
-                            footer:(items)=>{
-
-                                const index =
-                                    items[0].dataIndex;
-
-                                const d =
-                                    data[index];
-
-                                return "Total : "
-                                    + d.Nb23_Total;
-
-                            }
-
-                        }
-                    }
-
                 }
 
             }
 
         }
+
     );
 
 }
 
-/* =====================================================
+/* =========================================================
    BOUTONS
-===================================================== */
+========================================================= */
 
 document
 .getElementById("btnWithout")
@@ -390,11 +423,11 @@ document
 
 });
 
-/* =====================================================
+/* =========================================================
    START
-===================================================== */
+========================================================= */
 
-loadData();
+update();
 
 </script>
 

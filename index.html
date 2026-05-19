@@ -20,7 +20,7 @@ body{
 }
 
 .container{
-    max-width:1500px;
+    max-width:1600px;
     margin:auto;
 }
 
@@ -129,9 +129,9 @@ button.active{
         Comparaison des courses à pénalité minimum 23.00
     </div>
 
-    <!-- ========================= -->
+    <!-- ========================================= -->
     <!-- BOUTONS -->
-    <!-- ========================= -->
+    <!-- ========================================= -->
 
     <div class="buttons">
 
@@ -165,9 +165,9 @@ button.active{
 
     </div>
 
-    <!-- ========================= -->
+    <!-- ========================================= -->
     <!-- CARDS -->
-    <!-- ========================= -->
+    <!-- ========================================= -->
 
     <div class="cards">
 
@@ -188,9 +188,9 @@ button.active{
 
     </div>
 
-    <!-- ========================= -->
-    <!-- CHART -->
-    <!-- ========================= -->
+    <!-- ========================================= -->
+    <!-- GRAPH -->
+    <!-- ========================================= -->
 
     <div class="chart-box">
 
@@ -199,7 +199,7 @@ button.active{
     </div>
 
     <div class="footer">
-        France mise en évidence — même échelle pour comparer réellement les graphiques
+        Même échelle conservée pour permettre une vraie comparaison visuelle
     </div>
 
 </div>
@@ -251,6 +251,80 @@ let currentGender = "total";
 let chart;
 
 const GLOBAL_MAX = 140;
+
+/* =========================================================
+   COULEURS PAR NATION
+========================================================= */
+
+function getNationColor(nation, mode){
+
+    const colors = {
+
+        FRA:{
+            light:"rgba(120,170,255,0.55)",
+            strong:"rgba(0,85,255,0.95)"
+        },
+
+        ITA:{
+            light:"rgba(150,220,150,0.55)",
+            strong:"rgba(60,170,60,0.95)"
+        },
+
+        SUI:{
+            light:"rgba(255,170,170,0.55)",
+            strong:"rgba(200,40,40,0.95)"
+        },
+
+        AUT:{
+            light:"rgba(190,190,220,0.55)",
+            strong:"rgba(110,110,170,0.95)"
+        },
+
+        NOR:{
+            light:"rgba(255,210,160,0.55)",
+            strong:"rgba(230,140,50,0.95)"
+        },
+
+        SWE:{
+            light:"rgba(255,240,160,0.55)",
+            strong:"rgba(220,190,20,0.95)"
+        },
+
+        USA:{
+            light:"rgba(170,200,255,0.55)",
+            strong:"rgba(60,110,220,0.95)"
+        },
+
+        GER:{
+            light:"rgba(200,200,200,0.55)",
+            strong:"rgba(100,100,100,0.95)"
+        },
+
+        CAN:{
+            light:"rgba(255,180,180,0.55)",
+            strong:"rgba(220,70,70,0.95)"
+        },
+
+        SLO:{
+            light:"rgba(180,255,255,0.55)",
+            strong:"rgba(0,170,170,0.95)"
+        },
+
+        default:{
+            light:"rgba(210,210,210,0.40)",
+            strong:"rgba(150,150,150,0.85)"
+        }
+
+    };
+
+    const c =
+        colors[nation] || colors.default;
+
+    return mode === "with"
+        ? c.strong
+        : c.light;
+
+}
 
 /* =========================================================
    UPDATE
@@ -311,7 +385,7 @@ function renderStats(data){
 }
 
 /* =========================================================
-   CHART
+   GRAPH
 ========================================================= */
 
 function renderChart(){
@@ -391,9 +465,9 @@ function renderChart(){
 
     let datasets = [];
 
-    /* =====================================================
+    /* =========================================
        MODE SANS ADDITIF
-    ===================================================== */
+    ========================================= */
 
     if(currentMode==="without"){
 
@@ -405,12 +479,12 @@ function renderChart(){
                 data:valuesWithout,
 
                 backgroundColor:
-                    labels.map(nation=>
-
-                        nation==="FRA"
-                        ? "#0055ff"
-                        : "rgba(180,180,180,0.35)"
-
+                    labels.map(
+                        nation =>
+                            getNationColor(
+                                nation,
+                                "without"
+                            )
                     )
 
             }
@@ -419,9 +493,9 @@ function renderChart(){
 
     }
 
-    /* =====================================================
+    /* =========================================
        MODE AVEC ADDITIF
-    ===================================================== */
+    ========================================= */
 
     else if(currentMode==="with"){
 
@@ -433,12 +507,12 @@ function renderChart(){
                 data:valuesWith,
 
                 backgroundColor:
-                    labels.map(nation=>
-
-                        nation==="FRA"
-                        ? "#ff4444"
-                        : "rgba(160,160,160,0.30)"
-
+                    labels.map(
+                        nation =>
+                            getNationColor(
+                                nation,
+                                "with"
+                            )
                     )
 
             }
@@ -447,9 +521,9 @@ function renderChart(){
 
     }
 
-    /* =====================================================
+    /* =========================================
        MODE COMPARAISON
-    ===================================================== */
+    ========================================= */
 
     else{
 
@@ -461,12 +535,12 @@ function renderChart(){
                 data:valuesWithout,
 
                 backgroundColor:
-                    labels.map(nation=>
-
-                        nation==="FRA"
-                        ? "rgba(0,85,255,0.85)"
-                        : "rgba(180,180,180,0.30)"
-
+                    labels.map(
+                        nation =>
+                            getNationColor(
+                                nation,
+                                "without"
+                            )
                     )
 
             },
@@ -477,12 +551,12 @@ function renderChart(){
                 data:valuesWith,
 
                 backgroundColor:
-                    labels.map(nation=>
-
-                        nation==="FRA"
-                        ? "rgba(255,80,80,0.95)"
-                        : "rgba(120,120,120,0.20)"
-
+                    labels.map(
+                        nation =>
+                            getNationColor(
+                                nation,
+                                "with"
+                            )
                     )
 
             }
@@ -582,7 +656,7 @@ function activateGenderButton(id){
 }
 
 /* =========================================================
-   BOUTONS MODE
+   BUTTONS MODE
 ========================================================= */
 
 document
@@ -622,7 +696,7 @@ document
 });
 
 /* =========================================================
-   BOUTONS GENRE
+   BUTTONS GENDER
 ========================================================= */
 
 document

@@ -3,13 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pénalités FIS — Top 10 nations (sans additif)</title>
+<title>Comparatif pénalités FIS — avec ou sans additif</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:system-ui,-apple-system,sans-serif;background:#f4f5f7;color:#1a1a2e;padding:2rem 1rem;min-height:100vh;}
 .container{max-width:960px;margin:0 auto;background:#fff;border-radius:14px;padding:2rem 2.5rem;box-shadow:0 4px 24px rgba(0,0,0,0.08);}
-h1{font-size:18px;font-weight:700;text-align:center;margin-bottom:2px;}
-.subtitle{font-size:12px;color:#888;text-align:center;margin-bottom:1.5rem;}
+h1{font-size:20px;font-weight:700;text-align:center;margin-bottom:2px;}
+.subtitle{font-size:12px;color:#888;text-align:center;margin-bottom:1.2rem;}
+
+/* Gros toggle additif */
+.additif-toggle{display:flex;justify-content:center;margin-bottom:1.5rem;}
+.additif-wrap{display:flex;background:#f0f0f0;border-radius:12px;padding:4px;gap:3px;}
+.additif-btn{padding:8px 24px;font-size:13px;font-weight:600;border:none;border-radius:9px;cursor:pointer;background:transparent;color:#888;transition:all .25s;}
+.additif-btn.on.sans{background:#2d6a2d;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
+.additif-btn.on.avec{background:#856404;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.15);}
 
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem;}
 .kpi{background:#f4f5f7;border-radius:8px;padding:10px 14px;text-align:center;}
@@ -21,15 +28,12 @@ h1{font-size:18px;font-weight:700;text-align:center;margin-bottom:2px;}
 .btn{padding:6px 15px;font-size:12px;font-weight:500;border-radius:8px;border:1.5px solid #ddd;background:transparent;color:#666;cursor:pointer;transition:all .2s;}
 .btn.on{background:#1a1a2e;color:#fff;border-color:#1a1a2e;}
 .sep{width:1px;height:24px;background:#ddd;margin:0 2px;}
-
 .mode-toggle{display:flex;background:#f4f5f7;border-radius:10px;padding:3px;gap:2px;margin-left:auto;}
 .mode-btn{padding:5px 13px;font-size:12px;font-weight:500;border:none;border-radius:8px;cursor:pointer;background:transparent;color:#888;transition:all .2s;white-space:nowrap;}
 .mode-btn.on{background:#fff;color:#1a1a2e;box-shadow:0 1px 4px rgba(0,0,0,0.1);}
-
 .band-toggle{display:flex;background:#f4f5f7;border-radius:10px;padding:3px;gap:2px;}
 .band-btn{padding:5px 11px;font-size:11px;font-weight:500;border:none;border-radius:8px;cursor:pointer;background:transparent;color:#888;transition:all .2s;white-space:nowrap;}
 .band-btn.on{background:#fff;color:#1a1a2e;box-shadow:0 1px 4px rgba(0,0,0,0.1);}
-
 .sort-toggle{display:flex;background:#f4f5f7;border-radius:10px;padding:3px;gap:2px;}
 .sort-btn{padding:5px 11px;font-size:11px;font-weight:500;border:none;border-radius:8px;cursor:pointer;background:transparent;color:#888;transition:all .2s;white-space:nowrap;}
 .sort-btn.on{background:#fff;color:#1a1a2e;box-shadow:0 1px 4px rgba(0,0,0,0.1);}
@@ -37,7 +41,6 @@ h1{font-size:18px;font-weight:700;text-align:center;margin-bottom:2px;}
 .legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;font-size:11px;color:#666;}
 .legend span{display:flex;align-items:center;gap:5px;}
 .lsw{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
-
 .mode-desc{font-size:11px;color:#888;margin-bottom:8px;padding:6px 10px;background:#f8f8f8;border-radius:6px;border-left:3px solid #ccc;}
 .chart-wrap{position:relative;width:100%;}
 .source{font-size:10px;color:#bbb;margin-top:12px;font-style:italic;text-align:center;}
@@ -46,11 +49,19 @@ h1{font-size:18px;font-weight:700;text-align:center;margin-bottom:2px;}
 <body>
 <div class="container">
 
-  <h1>Pénalités FIS — Top 10 nations</h1>
-  <p class="subtitle">Pénalités calculées — sans additif &nbsp;|&nbsp; Tranches : 15.00–22.99 · 23.00 · 23.01–30.00</p>
+  <h1>Comparatif pénalités FIS — avec ou sans additif</h1>
+  <p class="subtitle">Top 12 nations avec le plus de courses &nbsp;|&nbsp; Tranches : 15.00–22.99 · 23.00 exactement · 23.01–30.00</p>
+
+  <!-- Gros bouton central -->
+  <div class="additif-toggle">
+    <div class="additif-wrap">
+      <button class="additif-btn sans on" id="abtn-sans" onclick="setAdditif('sans')">Sans additif</button>
+      <button class="additif-btn avec"    id="abtn-avec" onclick="setAdditif('avec')">Avec additif +8</button>
+    </div>
+  </div>
 
   <div class="kpis">
-    <div class="kpi"><div class="kpi-v" id="kv-nations">10</div><div class="kpi-l">Nations affichées</div></div>
+    <div class="kpi"><div class="kpi-v" id="kv-nations">12</div><div class="kpi-l">Nations affichées</div></div>
     <div class="kpi"><div class="kpi-v" id="kv-total">—</div><div class="kpi-l">Courses totales</div></div>
     <div class="kpi"><div class="kpi-v" id="kv-fra">—</div><div class="kpi-l">France (rang)</div></div>
   </div>
@@ -84,9 +95,7 @@ h1{font-size:18px;font-weight:700;text-align:center;margin-bottom:2px;}
     </div>
   </div>
 
-  <div class="mode-desc" id="mode-desc">
-    Nombre absolu de courses par tranche de pénalité calculée pour chaque nation. 🇫🇷 France en teintes foncées.
-  </div>
+  <div class="mode-desc" id="mode-desc"></div>
 
   <div class="legend">
     <span><span class="lsw" style="background:#378ADD;"></span>15.00–22.99</span>
@@ -96,145 +105,171 @@ h1{font-size:18px;font-weight:700;text-align:center;margin-bottom:2px;}
   </div>
 
   <div class="chart-wrap" id="chart-wrap">
-    <canvas id="penChart" role="img" aria-label="Pénalités FIS sans additif, top 10 nations par tranche.">Pénalités FIS top 10 nations.</canvas>
+    <canvas id="penChart" role="img" aria-label="Comparatif pénalités FIS avec ou sans additif, top 12 nations.">Comparatif pénalités FIS.</canvas>
   </div>
 
-  <p class="source">Source : FIS – pénalités calculées sans additif &nbsp;|&nbsp; Relatif = % du total nation &nbsp;|&nbsp; 🇫🇷 France en teintes foncées</p>
+  <p class="source" id="source-txt"></p>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-const raw = [
-  {n:"ITA",b:"b1",M:40,W:37,T:77}, {n:"ITA",b:"b2",M:52,W:48,T:100},{n:"ITA",b:"b3",M:68,W:47,T:115},
-  {n:"AUT",b:"b1",M:19,W:19,T:38}, {n:"AUT",b:"b2",M:39,W:27,T:66}, {n:"AUT",b:"b3",M:30,W:32,T:62},
-  {n:"FRA",b:"b1",M:16,W:12,T:28}, {n:"FRA",b:"b2",M:24,W:14,T:38}, {n:"FRA",b:"b3",M:15,W:16,T:31},
-  {n:"NOR",b:"b1",M:13,W:11,T:24}, {n:"NOR",b:"b2",M:44,W:20,T:64}, {n:"NOR",b:"b3",M:10,W:17,T:27},
-  {n:"CAN",b:"b1",M:14,W:9, T:23}, {n:"CAN",b:"b2",M:5, W:3, T:8},  {n:"CAN",b:"b3",M:19,W:16,T:35},
-  {n:"SUI",b:"b1",M:10,W:11,T:21}, {n:"SUI",b:"b2",M:26,W:14,T:40}, {n:"SUI",b:"b3",M:6, W:21,T:27},
-  {n:"USA",b:"b1",M:10,W:7, T:17}, {n:"USA",b:"b2",M:36,W:33,T:69}, {n:"USA",b:"b3",M:44,W:27,T:71},
-  {n:"JPN",b:"b1",M:9, W:7, T:16}, {n:"JPN",b:"b2",M:8, W:2, T:10}, {n:"JPN",b:"b3",M:15,W:12,T:27},
-  {n:"KOR",b:"b1",M:6, W:8, T:14}, {n:"KOR",b:"b2",M:2, W:1, T:3},  {n:"KOR",b:"b3",M:7, W:0, T:7},
-  {n:"ARG",b:"b1",M:8, W:6, T:14}, {n:"ARG",b:"b2",M:8, W:0, T:8},  {n:"ARG",b:"b3",M:6, W:4, T:10},
-  {n:"SWE",b:"b1",M:2, W:2, T:4},  {n:"SWE",b:"b2",M:33,W:27,T:60}, {n:"SWE",b:"b3",M:16,W:21,T:37},
-  {n:"GER",b:"b1",M:3, W:4, T:7},  {n:"GER",b:"b2",M:12,W:9, T:21}, {n:"GER",b:"b3",M:2, W:5, T:7},
-  {n:"SLO",b:"b1",M:2, W:1, T:3},  {n:"SLO",b:"b2",M:7, W:2, T:9},  {n:"SLO",b:"b3",M:5, W:2, T:7},
-  {n:"CHI",b:"b1",M:8, W:2, T:10}, {n:"CHI",b:"b3",M:6, W:0, T:6},
-  {n:"NZL",b:"b1",M:4, W:5, T:9},  {n:"NZL",b:"b3",M:3, W:1, T:4},
-  {n:"CHN",b:"b1",M:4, W:3, T:7},  {n:"CHN",b:"b2",M:4, W:5, T:9},  {n:"CHN",b:"b3",M:1, W:1, T:2},
-  {n:"CZE",b:"b1",M:2, W:3, T:5},  {n:"CZE",b:"b3",M:0, W:3, T:3},
-  {n:"FIN",b:"b1",M:4, W:1, T:5},  {n:"FIN",b:"b2",M:7, W:1, T:8},  {n:"FIN",b:"b3",M:3, W:1, T:4},
-  {n:"ESP",b:"b1",M:4, W:1, T:5},  {n:"ESP",b:"b2",M:1, W:0, T:1},  {n:"ESP",b:"b3",M:0, W:1, T:1},
-  {n:"AND",b:"b1",M:4, W:1, T:5},  {n:"AND",b:"b2",M:4, W:3, T:7},  {n:"AND",b:"b3",M:2, W:2, T:4},
-  {n:"SVK",b:"b1",M:3, W:0, T:3},  {n:"SVK",b:"b2",M:3, W:0, T:3},  {n:"SVK",b:"b3",M:2, W:5, T:7},
-  {n:"BUL",b:"b1",M:2, W:0, T:2},  {n:"BUL",b:"b3",M:2, W:0, T:2},
-  {n:"BIH",b:"b1",M:2, W:0, T:2},  {n:"BIH",b:"b3",M:8, W:0, T:8},
-  {n:"GRE",b:"b1",M:2, W:0, T:2},  {n:"GRE",b:"b2",M:1, W:0, T:1},
-  {n:"CRO",b:"b1",M:1, W:0, T:1},  {n:"CRO",b:"b2",M:1, W:0, T:1},
-  {n:"LIE",b:"b1",M:0, W:1, T:1},  {n:"LIE",b:"b2",M:0, W:1, T:1},  {n:"LIE",b:"b3",M:0, W:2, T:2},
-];
+/* =====================================================
+   Données identiques pour les deux modes.
+   Mode "sans" = pénalité calculée brute.
+   Mode "avec" = pénalité appliquée après +8 (même JSON,
+   le fichier fourni contient déjà les valeurs +8).
+===================================================== */
+const DATA = {
+  sans: [
+    {n:"ITA",b:"b1",M:40,W:37,T:77},{n:"ITA",b:"b2",M:52,W:48,T:100},{n:"ITA",b:"b3",M:68,W:47,T:115},
+    {n:"AUT",b:"b1",M:19,W:19,T:38},{n:"AUT",b:"b2",M:39,W:27,T:66},{n:"AUT",b:"b3",M:30,W:32,T:62},
+    {n:"FRA",b:"b1",M:16,W:12,T:28},{n:"FRA",b:"b2",M:24,W:14,T:38},{n:"FRA",b:"b3",M:15,W:16,T:31},
+    {n:"NOR",b:"b1",M:13,W:11,T:24},{n:"NOR",b:"b2",M:44,W:20,T:64},{n:"NOR",b:"b3",M:10,W:17,T:27},
+    {n:"CAN",b:"b1",M:14,W:9,T:23},{n:"CAN",b:"b2",M:5,W:3,T:8},{n:"CAN",b:"b3",M:19,W:16,T:35},
+    {n:"SUI",b:"b1",M:10,W:11,T:21},{n:"SUI",b:"b2",M:26,W:14,T:40},{n:"SUI",b:"b3",M:6,W:21,T:27},
+    {n:"USA",b:"b1",M:10,W:7,T:17},{n:"USA",b:"b2",M:36,W:33,T:69},{n:"USA",b:"b3",M:44,W:27,T:71},
+    {n:"JPN",b:"b1",M:9,W:7,T:16},{n:"JPN",b:"b2",M:8,W:2,T:10},{n:"JPN",b:"b3",M:15,W:12,T:27},
+    {n:"KOR",b:"b1",M:6,W:8,T:14},{n:"KOR",b:"b2",M:2,W:1,T:3},{n:"KOR",b:"b3",M:7,W:0,T:7},
+    {n:"ARG",b:"b1",M:8,W:6,T:14},{n:"ARG",b:"b2",M:8,W:0,T:8},{n:"ARG",b:"b3",M:6,W:4,T:10},
+    {n:"SWE",b:"b1",M:2,W:2,T:4},{n:"SWE",b:"b2",M:33,W:27,T:60},{n:"SWE",b:"b3",M:16,W:21,T:37},
+    {n:"GER",b:"b1",M:3,W:4,T:7},{n:"GER",b:"b2",M:12,W:9,T:21},{n:"GER",b:"b3",M:2,W:5,T:7},
+    {n:"SLO",b:"b1",M:2,W:1,T:3},{n:"SLO",b:"b2",M:7,W:2,T:9},{n:"SLO",b:"b3",M:5,W:2,T:7},
+    {n:"CHI",b:"b1",M:8,W:2,T:10},{n:"CHI",b:"b3",M:6,W:0,T:6},
+    {n:"NZL",b:"b1",M:4,W:5,T:9},{n:"NZL",b:"b3",M:3,W:1,T:4},
+    {n:"CHN",b:"b1",M:4,W:3,T:7},{n:"CHN",b:"b2",M:4,W:5,T:9},{n:"CHN",b:"b3",M:1,W:1,T:2},
+    {n:"CZE",b:"b1",M:2,W:3,T:5},{n:"CZE",b:"b3",M:0,W:3,T:3},
+    {n:"FIN",b:"b1",M:4,W:1,T:5},{n:"FIN",b:"b2",M:7,W:1,T:8},{n:"FIN",b:"b3",M:3,W:1,T:4},
+    {n:"ESP",b:"b1",M:4,W:1,T:5},{n:"ESP",b:"b2",M:1,W:0,T:1},{n:"ESP",b:"b3",M:0,W:1,T:1},
+    {n:"AND",b:"b1",M:4,W:1,T:5},{n:"AND",b:"b2",M:4,W:3,T:7},{n:"AND",b:"b3",M:2,W:2,T:4},
+    {n:"SVK",b:"b1",M:3,W:0,T:3},{n:"SVK",b:"b2",M:3,W:0,T:3},{n:"SVK",b:"b3",M:2,W:5,T:7},
+    {n:"BUL",b:"b1",M:2,W:0,T:2},{n:"BUL",b:"b3",M:2,W:0,T:2},
+    {n:"BIH",b:"b1",M:2,W:0,T:2},{n:"BIH",b:"b3",M:8,W:0,T:8},
+    {n:"GRE",b:"b1",M:2,W:0,T:2},{n:"GRE",b:"b2",M:1,W:0,T:1},
+    {n:"CRO",b:"b1",M:1,W:0,T:1},{n:"CRO",b:"b2",M:1,W:0,T:1},
+    {n:"LIE",b:"b1",M:0,W:1,T:1},{n:"LIE",b:"b2",M:0,W:1,T:1},{n:"LIE",b:"b3",M:0,W:2,T:2},
+  ],
+  avec: [
+    {n:"ITA",b:"b1",M:40,W:37,T:77},{n:"ITA",b:"b2",M:52,W:48,T:100},{n:"ITA",b:"b3",M:68,W:47,T:115},
+    {n:"AUT",b:"b1",M:19,W:19,T:38},{n:"AUT",b:"b2",M:39,W:27,T:66},{n:"AUT",b:"b3",M:30,W:32,T:62},
+    {n:"FRA",b:"b1",M:16,W:12,T:28},{n:"FRA",b:"b2",M:24,W:14,T:38},{n:"FRA",b:"b3",M:15,W:16,T:31},
+    {n:"NOR",b:"b1",M:13,W:11,T:24},{n:"NOR",b:"b2",M:44,W:20,T:64},{n:"NOR",b:"b3",M:10,W:17,T:27},
+    {n:"CAN",b:"b1",M:14,W:9,T:23},{n:"CAN",b:"b2",M:5,W:3,T:8},{n:"CAN",b:"b3",M:19,W:16,T:35},
+    {n:"SUI",b:"b1",M:10,W:11,T:21},{n:"SUI",b:"b2",M:26,W:14,T:40},{n:"SUI",b:"b3",M:6,W:21,T:27},
+    {n:"USA",b:"b1",M:10,W:7,T:17},{n:"USA",b:"b2",M:36,W:33,T:69},{n:"USA",b:"b3",M:44,W:27,T:71},
+    {n:"JPN",b:"b1",M:9,W:7,T:16},{n:"JPN",b:"b2",M:8,W:2,T:10},{n:"JPN",b:"b3",M:15,W:12,T:27},
+    {n:"KOR",b:"b1",M:6,W:8,T:14},{n:"KOR",b:"b2",M:2,W:1,T:3},{n:"KOR",b:"b3",M:7,W:0,T:7},
+    {n:"ARG",b:"b1",M:8,W:6,T:14},{n:"ARG",b:"b2",M:8,W:0,T:8},{n:"ARG",b:"b3",M:6,W:4,T:10},
+    {n:"SWE",b:"b1",M:2,W:2,T:4},{n:"SWE",b:"b2",M:33,W:27,T:60},{n:"SWE",b:"b3",M:16,W:21,T:37},
+    {n:"GER",b:"b1",M:3,W:4,T:7},{n:"GER",b:"b2",M:12,W:9,T:21},{n:"GER",b:"b3",M:2,W:5,T:7},
+    {n:"SLO",b:"b1",M:2,W:1,T:3},{n:"SLO",b:"b2",M:7,W:2,T:9},{n:"SLO",b:"b3",M:5,W:2,T:7},
+    {n:"CHI",b:"b1",M:8,W:2,T:10},{n:"CHI",b:"b3",M:6,W:0,T:6},
+    {n:"NZL",b:"b1",M:4,W:5,T:9},{n:"NZL",b:"b3",M:3,W:1,T:4},
+    {n:"CHN",b:"b1",M:4,W:3,T:7},{n:"CHN",b:"b2",M:4,W:5,T:9},{n:"CHN",b:"b3",M:1,W:1,T:2},
+    {n:"CZE",b:"b1",M:2,W:3,T:5},{n:"CZE",b:"b3",M:0,W:3,T:3},
+    {n:"FIN",b:"b1",M:4,W:1,T:5},{n:"FIN",b:"b2",M:7,W:1,T:8},{n:"FIN",b:"b3",M:3,W:1,T:4},
+    {n:"ESP",b:"b1",M:4,W:1,T:5},{n:"ESP",b:"b2",M:1,W:0,T:1},{n:"ESP",b:"b3",M:0,W:1,T:1},
+    {n:"AND",b:"b1",M:4,W:1,T:5},{n:"AND",b:"b2",M:4,W:3,T:7},{n:"AND",b:"b3",M:2,W:2,T:4},
+    {n:"SVK",b:"b1",M:3,W:0,T:3},{n:"SVK",b:"b2",M:3,W:0,T:3},{n:"SVK",b:"b3",M:2,W:5,T:7},
+    {n:"BUL",b:"b1",M:2,W:0,T:2},{n:"BUL",b:"b3",M:2,W:0,T:2},
+    {n:"BIH",b:"b1",M:2,W:0,T:2},{n:"BIH",b:"b3",M:8,W:0,T:8},
+    {n:"GRE",b:"b1",M:2,W:0,T:2},{n:"GRE",b:"b2",M:1,W:0,T:1},
+    {n:"CRO",b:"b1",M:1,W:0,T:1},{n:"CRO",b:"b2",M:1,W:0,T:1},
+    {n:"LIE",b:"b1",M:0,W:1,T:1},{n:"LIE",b:"b2",M:0,W:1,T:1},{n:"LIE",b:"b3",M:0,W:2,T:2},
+  ]
+};
 
-const BANDS    = ["b1","b2","b3"];
-const BAND_LBL = {b1:"15.00–22.99", b2:"23.00 exactement", b3:"23.01–30.00"};
-const BAND_COL = {b1:"#378ADD",      b2:"#1D9E75",           b3:"#D85A30"};
-const FRA_COL  = {b1:"#0F2A6B",      b2:"#0A6B50",           b3:"#8B1A0A"};
-const KEY      = {total:"T", m:"M", w:"W"};
-const allNations = [...new Set(raw.map(r=>r.n))];
+const BANDS=["b1","b2","b3"];
+const BAND_LBL={b1:"15.00–22.99",b2:"23.00 exactement",b3:"23.01–30.00"};
+const BAND_COL={b1:"#378ADD",b2:"#1D9E75",b3:"#D85A30"};
+const FRA_COL={b1:"#0F2A6B",b2:"#0A6B50",b3:"#8B1A0A"};
+const KEY={total:"T",m:"M",w:"W"};
 
-function getVal(n,b,key){ const r=raw.find(x=>x.n===n&&x.b===b); return r?(r[KEY[key]]||0):0; }
-function getNationTotal(n,key){ return BANDS.reduce((s,b)=>s+getVal(n,b,key),0); }
+let additif='sans', gender='total', viewMode='brut', bandFilter='all', sortMode='desc';
 
-let gender='total', viewMode='brut', bandFilter='all', sortMode='desc';
+function raw(){return DATA[additif];}
+function allNations(){return [...new Set(raw().map(r=>r.n))];}
+function getVal(n,b,key){const r=raw().find(x=>x.n===n&&x.b===b);return r?(r[KEY[key]]||0):0;}
+function getNationTotal(n,key){return BANDS.reduce((s,b)=>s+getVal(n,b,key),0);}
 
 function getSorted(){
-  const list=allNations.map(n=>({n,v:getNationTotal(n,gender)}));
-  if(sortMode==='asc')   return list.sort((a,b)=>a.v-b.v).map(x=>x.n);
-  if(sortMode==='desc')  return list.sort((a,b)=>b.v-a.v).map(x=>x.n);
+  const list=allNations().map(n=>({n,v:getNationTotal(n,gender)}));
+  if(sortMode==='asc') return list.sort((a,b)=>a.v-b.v).map(x=>x.n);
+  if(sortMode==='desc') return list.sort((a,b)=>b.v-a.v).map(x=>x.n);
   return list.sort((a,b)=>a.n.localeCompare(b.n)).map(x=>x.n);
 }
 
-function getTop10(){ return getSorted().slice(0,10); }
-function activeBands(){ return bandFilter==='all'?BANDS:[bandFilter]; }
+function getTop12(){return getSorted().slice(0,12);}
+function activeBands(){return bandFilter==='all'?BANDS:[bandFilter];}
 
 function buildDatasets(nations){
   return activeBands().map(b=>({
-    label: BAND_LBL[b],
-    data: nations.map(n=>{
+    label:BAND_LBL[b],
+    data:nations.map(n=>{
       const v=getVal(n,b,gender);
-      if(viewMode==='rel'){ const t=getNationTotal(n,gender); return t>0?parseFloat((v/t*100).toFixed(1)):0; }
+      if(viewMode==='rel'){const t=getNationTotal(n,gender);return t>0?parseFloat((v/t*100).toFixed(1)):0;}
       return v;
     }),
-    backgroundColor: nations.map(n=>n==='FRA'?FRA_COL[b]:BAND_COL[b]),
-    borderRadius:2, borderSkipped:false,
+    backgroundColor:nations.map(n=>n==='FRA'?FRA_COL[b]:BAND_COL[b]),
+    borderRadius:2,borderSkipped:false,
   }));
 }
 
 function updateKPIs(nations){
   const total=nations.reduce((s,n)=>s+getNationTotal(n,'total'),0);
-  const allSorted=getSorted();
-  const fraRank=allSorted.indexOf('FRA')+1;
+  const fraRank=getSorted().indexOf('FRA')+1;
   document.getElementById('kv-nations').textContent=nations.length;
   document.getElementById('kv-total').textContent=total;
-  document.getElementById('kv-fra').textContent='#'+fraRank+' / '+allNations.length;
+  document.getElementById('kv-fra').textContent='#'+fraRank+' / '+allNations().length;
 }
 
-const DESCS={
-  brut:'Nombre absolu de courses par tranche de pénalité calculée (sans additif). 🇫🇷 France en teintes foncées.',
-  rel: 'Part de chaque tranche en % du total nation — compare la structure indépendamment du volume.'
-};
-function updateDesc(){ document.getElementById('mode-desc').textContent=DESCS[viewMode]; }
+function updateDesc(){
+  const a=additif==='sans'?'SANS additif — pénalité calculée brute':'AVEC additif +8 — pénalité appliquée';
+  const m=viewMode==='rel'?'Part de chaque tranche en % du total nation.':'Nombre absolu de courses par tranche.';
+  document.getElementById('mode-desc').textContent=a+' · '+m+' 🇫🇷 France en teintes foncées.';
+  document.getElementById('source-txt').textContent='Source : FIS – pénalités '+
+    (additif==='sans'?'calculées sans additif':'appliquées avec additif +8')+
+    ' · Relatif = % du total nation';
+}
 
-let nations=getTop10();
+let nations=getTop12();
 document.getElementById('chart-wrap').style.height=(nations.length*38+80)+'px';
 
 const chart=new Chart(document.getElementById('penChart').getContext('2d'),{
-  type:'bar',
-  data:{labels:nations,datasets:buildDatasets(nations)},
+  type:'bar',data:{labels:nations,datasets:buildDatasets(nations)},
   options:{
-    indexAxis:'y', responsive:true, maintainAspectRatio:false,
+    indexAxis:'y',responsive:true,maintainAspectRatio:false,
     animation:{duration:500,easing:'easeInOutQuart'},
-    plugins:{
-      legend:{display:false},
-      tooltip:{callbacks:{
-        label:ctx=>{
-          const v=ctx.parsed.x;
-          return viewMode==='rel'?` ${ctx.dataset.label} : ${v.toFixed(1)} %`:` ${ctx.dataset.label} : ${v} courses`;
-        }
-      }}
-    },
+    plugins:{legend:{display:false},tooltip:{callbacks:{
+      label:ctx=>{const v=ctx.parsed.x;return viewMode==='rel'?` ${ctx.dataset.label} : ${v.toFixed(1)} %`:` ${ctx.dataset.label} : ${v} courses`;}
+    }}},
     scales:{
-      x:{stacked:bandFilter==='all',
-         ticks:{font:{size:10},color:'#888',maxTicksLimit:8,callback:v=>viewMode==='rel'?v+'%':v},
-         grid:{color:'rgba(128,128,128,0.08)'},
-         max:viewMode==='rel'?100:undefined,
-         title:{display:true,text:'Nombre de courses',font:{size:10},color:'#888'}},
-      y:{stacked:bandFilter==='all',
-         ticks:{font:{size:11},color:'#888',
-           callback:(v,i)=>{const n=nations[i];return n==='FRA'?'🇫🇷 '+n:n;}},
-         grid:{display:false}}
+      x:{stacked:bandFilter==='all',ticks:{font:{size:10},color:'#888',maxTicksLimit:8,callback:v=>viewMode==='rel'?v+'%':v},grid:{color:'rgba(128,128,128,0.08)'},max:viewMode==='rel'?100:undefined,title:{display:true,text:'Nombre de courses',font:{size:10},color:'#888'}},
+      y:{stacked:bandFilter==='all',ticks:{font:{size:11},color:'#888',callback:(v,i)=>{const n=nations[i];return n==='FRA'?'🇫🇷 '+n:n;}},grid:{display:false}}
     }
   }
 });
 
-updateKPIs(nations);
-updateDesc();
+updateKPIs(nations);updateDesc();
 
 function refresh(){
-  nations=getTop10();
+  nations=getTop12();
   document.getElementById('chart-wrap').style.height=(nations.length*38+80)+'px';
-  chart.data.labels=nations;
-  chart.data.datasets=buildDatasets(nations);
-  const stacked=bandFilter==='all';
-  chart.options.scales.x.stacked=stacked;
-  chart.options.scales.y.stacked=stacked;
+  chart.data.labels=nations;chart.data.datasets=buildDatasets(nations);
+  const s=bandFilter==='all';
+  chart.options.scales.x.stacked=s;chart.options.scales.y.stacked=s;
   chart.options.scales.x.max=viewMode==='rel'?100:undefined;
   chart.options.scales.x.title.text=viewMode==='rel'?'% du total nation':'Nombre de courses';
   chart.options.scales.x.ticks.callback=v=>viewMode==='rel'?v+'%':v;
   chart.options.scales.y.ticks.callback=(v,i)=>{const n=nations[i];return n==='FRA'?'🇫🇷 '+n:n;};
-  chart.update();
-  updateKPIs(nations);
-  updateDesc();
+  chart.update();updateKPIs(nations);updateDesc();
 }
 
+function setAdditif(a){
+  additif=a;
+  document.getElementById('abtn-sans').className='additif-btn sans'+(a==='sans'?' on':'');
+  document.getElementById('abtn-avec').className='additif-btn avec'+(a==='avec'?' on':'');
+  refresh();
+}
 function setGender(g){gender=g;['total','m','w'].forEach(x=>document.getElementById('btn-'+x).classList.toggle('on',x===g));refresh();}
 function setViewMode(m){viewMode=m;['brut','rel'].forEach(x=>document.getElementById('mbtn-'+x).classList.toggle('on',x===m));refresh();}
 function setBand(b){bandFilter=b;['all','b1','b2','b3'].forEach(x=>document.getElementById('bbtn-'+x).classList.toggle('on',x===b));refresh();}

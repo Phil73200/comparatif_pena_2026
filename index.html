@@ -20,7 +20,7 @@ body{
 }
 
 .container{
-    max-width:1400px;
+    max-width:1500px;
     margin:auto;
 }
 
@@ -40,7 +40,7 @@ h1{
     display:flex;
     justify-content:center;
     gap:15px;
-    margin-bottom:30px;
+    margin-bottom:20px;
     flex-wrap:wrap;
 }
 
@@ -129,6 +129,10 @@ button.active{
         Comparaison des courses à pénalité minimum 23.00
     </div>
 
+    <!-- ========================= -->
+    <!-- BOUTONS -->
+    <!-- ========================= -->
+
     <div class="buttons">
 
         <button id="btnWithout" class="active">
@@ -140,6 +144,26 @@ button.active{
         </button>
 
     </div>
+
+    <div class="buttons">
+
+        <button id="btnTotal" class="active">
+            Total
+        </button>
+
+        <button id="btnMen">
+            Hommes
+        </button>
+
+        <button id="btnWomen">
+            Dames
+        </button>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- CARDS -->
+    <!-- ========================= -->
 
     <div class="cards">
 
@@ -160,6 +184,10 @@ button.active{
 
     </div>
 
+    <!-- ========================= -->
+    <!-- CHART -->
+    <!-- ========================= -->
+
     <div class="chart-box">
 
         <canvas id="chart"></canvas>
@@ -167,7 +195,7 @@ button.active{
     </div>
 
     <div class="footer">
-        Comparatif dynamique FIS — HTML autonome GitHub Ready
+        Même échelle verticale conservée pour permettre la comparaison réelle
     </div>
 
 </div>
@@ -180,36 +208,16 @@ button.active{
 
 const dataWithout = [
 
-{
-"Nationcode":"ITA","Nb23_M":79,"Nb23_W":57,"Nb23_Total":136
-},
-{
-"Nationcode":"AUT","Nb23_M":49,"Nb23_W":39,"Nb23_Total":88
-},
-{
-"Nationcode":"SWE","Nb23_M":48,"Nb23_W":26,"Nb23_Total":74
-},
-{
-"Nationcode":"USA","Nb23_M":40,"Nb23_W":30,"Nb23_Total":70
-},
-{
-"Nationcode":"NOR","Nb23_M":39,"Nb23_W":23,"Nb23_Total":62
-},
-{
-"Nationcode":"SUI","Nb23_M":29,"Nb23_W":21,"Nb23_Total":50
-},
-{
-"Nationcode":"FRA","Nb23_M":26,"Nb23_W":14,"Nb23_Total":40
-},
-{
-"Nationcode":"SLO","Nb23_M":13,"Nb23_W":6,"Nb23_Total":19
-},
-{
-"Nationcode":"CAN","Nb23_M":14,"Nb23_W":3,"Nb23_Total":17
-},
-{
-"Nationcode":"GER","Nb23_M":8,"Nb23_W":8,"Nb23_Total":16
-}
+{"Nationcode":"ITA","Nb23_M":79,"Nb23_W":57,"Nb23_Total":136},
+{"Nationcode":"AUT","Nb23_M":49,"Nb23_W":39,"Nb23_Total":88},
+{"Nationcode":"SWE","Nb23_M":48,"Nb23_W":26,"Nb23_Total":74},
+{"Nationcode":"USA","Nb23_M":40,"Nb23_W":30,"Nb23_Total":70},
+{"Nationcode":"NOR","Nb23_M":39,"Nb23_W":23,"Nb23_Total":62},
+{"Nationcode":"SUI","Nb23_M":29,"Nb23_W":21,"Nb23_Total":50},
+{"Nationcode":"FRA","Nb23_M":26,"Nb23_W":14,"Nb23_Total":40},
+{"Nationcode":"SLO","Nb23_M":13,"Nb23_W":6,"Nb23_Total":19},
+{"Nationcode":"CAN","Nb23_M":14,"Nb23_W":3,"Nb23_Total":17},
+{"Nationcode":"GER","Nb23_M":8,"Nb23_W":8,"Nb23_Total":16}
 
 ];
 
@@ -219,27 +227,13 @@ const dataWithout = [
 
 const dataWith = [
 
-{
-"Nationcode":"USA","Nb23_M":27,"Nb23_W":23,"Nb23_Total":50
-},
-{
-"Nationcode":"ITA","Nb23_M":20,"Nb23_W":25,"Nb23_Total":45
-},
-{
-"Nationcode":"AUT","Nb23_M":10,"Nb23_W":12,"Nb23_Total":22
-},
-{
-"Nationcode":"NOR","Nb23_M":11,"Nb23_W":9,"Nb23_Total":20
-},
-{
-"Nationcode":"FRA","Nb23_M":12,"Nb23_W":7,"Nb23_Total":19
-},
-{
-"Nationcode":"SUI","Nb23_M":9,"Nb23_W":6,"Nb23_Total":15
-},
-{
-"Nationcode":"SWE","Nb23_M":6,"Nb23_W":6,"Nb23_Total":12
-}
+{"Nationcode":"USA","Nb23_M":27,"Nb23_W":23,"Nb23_Total":50},
+{"Nationcode":"ITA","Nb23_M":20,"Nb23_W":25,"Nb23_Total":45},
+{"Nationcode":"AUT","Nb23_M":10,"Nb23_W":12,"Nb23_Total":22},
+{"Nationcode":"NOR","Nb23_M":11,"Nb23_W":9,"Nb23_Total":20},
+{"Nationcode":"FRA","Nb23_M":12,"Nb23_W":7,"Nb23_Total":19},
+{"Nationcode":"SUI","Nb23_M":9,"Nb23_W":6,"Nb23_Total":15},
+{"Nationcode":"SWE","Nb23_M":6,"Nb23_W":6,"Nb23_Total":12}
 
 ];
 
@@ -248,8 +242,15 @@ const dataWith = [
 ========================================================= */
 
 let currentMode = "without";
+let currentGender = "total";
 
 let chart;
+
+/* =========================================================
+   VALEUR MAX COMMUNE
+========================================================= */
+
+const GLOBAL_MAX = 140;
 
 /* =========================================================
    UPDATE
@@ -277,19 +278,27 @@ function renderStats(data){
     document.getElementById("nbNations")
     .innerText = data.length;
 
-    const total =
-        data.reduce(
-            (sum,d)=>sum+d.Nb23_Total,
-            0
-        );
+    let total = 0;
+
+    data.forEach(d=>{
+
+        if(currentGender==="men"){
+            total += d.Nb23_M;
+        }
+        else if(currentGender==="women"){
+            total += d.Nb23_W;
+        }
+        else{
+            total += d.Nb23_Total;
+        }
+
+    });
 
     document.getElementById("nbCourses")
     .innerText = total;
 
     const fraIndex =
-        data.findIndex(
-            d=>d.Nationcode==="FRA"
-        );
+        data.findIndex(d=>d.Nationcode==="FRA");
 
     document.getElementById("fraRank")
     .innerText =
@@ -308,11 +317,34 @@ function renderChart(data){
     const labels =
         data.map(d=>d.Nationcode);
 
-    const men =
-        data.map(d=>d.Nb23_M);
+    let values = [];
 
-    const women =
-        data.map(d=>d.Nb23_W);
+    let color = "#3b82f6";
+
+    if(currentGender==="men"){
+
+        values =
+            data.map(d=>d.Nb23_M);
+
+        color = "#3b82f6";
+
+    }
+    else if(currentGender==="women"){
+
+        values =
+            data.map(d=>d.Nb23_W);
+
+        color = "#ec4899";
+
+    }
+    else{
+
+        values =
+            data.map(d=>d.Nb23_Total);
+
+        color = "#16a085";
+
+    }
 
     if(chart){
         chart.destroy();
@@ -333,15 +365,9 @@ function renderChart(data){
                 datasets:[
 
                     {
-                        label:"Hommes",
-                        data:men,
-                        backgroundColor:"#3b82f6"
-                    },
-
-                    {
-                        label:"Dames",
-                        data:women,
-                        backgroundColor:"#ec4899"
+                        label:"Courses",
+                        data:values,
+                        backgroundColor:color
                     }
 
                 ]
@@ -358,19 +384,18 @@ function renderChart(data){
 
                 plugins:{
                     legend:{
-                        position:"top"
+                        display:false
                     }
                 },
 
                 scales:{
 
-                    x:{
-                        stacked:true
-                    },
-
                     y:{
-                        stacked:true,
-                        beginAtZero:true
+
+                        beginAtZero:true,
+
+                        max:GLOBAL_MAX
+
                     }
 
                 }
@@ -384,7 +409,7 @@ function renderChart(data){
 }
 
 /* =========================================================
-   BOUTONS
+   BOUTONS MODE
 ========================================================= */
 
 document
@@ -422,6 +447,66 @@ document
     update();
 
 });
+
+/* =========================================================
+   BOUTONS GENRE
+========================================================= */
+
+document
+.getElementById("btnTotal")
+.addEventListener("click",()=>{
+
+    currentGender = "total";
+
+    activateGenderButton("btnTotal");
+
+    update();
+
+});
+
+document
+.getElementById("btnMen")
+.addEventListener("click",()=>{
+
+    currentGender = "men";
+
+    activateGenderButton("btnMen");
+
+    update();
+
+});
+
+document
+.getElementById("btnWomen")
+.addEventListener("click",()=>{
+
+    currentGender = "women";
+
+    activateGenderButton("btnWomen");
+
+    update();
+
+});
+
+function activateGenderButton(id){
+
+    document
+    .getElementById("btnTotal")
+    .classList.remove("active");
+
+    document
+    .getElementById("btnMen")
+    .classList.remove("active");
+
+    document
+    .getElementById("btnWomen")
+    .classList.remove("active");
+
+    document
+    .getElementById(id)
+    .classList.add("active");
+
+}
 
 /* =========================================================
    START
